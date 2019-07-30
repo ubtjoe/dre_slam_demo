@@ -1,0 +1,87 @@
+%YAML:1.2
+
+#--------------------------------------------------------------------------------------------
+# Camera params. Pinhole
+#--------------------------------------------------------------------------------------------
+cam_rgb_topic_: /camera/color/image_raw
+cam_depth_topic_: /camera/depth/image_rect_raw
+
+cam_fx_: 307.74047851562500  # K[0, 0]
+cam_fy_: 307.53375244140625  # K[1, 1]
+cam_cx_: 214.35890197753906  # K[2, 0]
+cam_cy_: 115.25115203857422  # K[2, 1]
+cam_k1_: 0.0  # D[0]
+cam_k2_: 0.0  # D[1]
+cam_p1_: 0.0  # D[2]
+cam_p2_: 0.0  # D[3]
+cam_k3_: 0.0  # D[4]
+
+cam_height_: 240
+cam_width_: 424
+
+cam_depth_factor_: 0.001   # Depth scale factor.
+
+cam_dmax_: 8.0   # Max depth value to be used. (m)
+cam_dmin_: 0.1   # Min depth value to be used. (m) 
+ 
+cam_fps_: 15     # Camera FPs.
+
+#--------------------------------------------------------------------------------------------
+# Robot intrinsic and extrinsic
+#--------------------------------------------------------------------------------------------
+#### Intrinsic TODO(jwd) - figure out why joint_states is not incrementing when rolling the turtlebot (not remote-controlled)
+encoder_topic_: /joint_states
+
+odom_kl_: 1.0   # left wheel factor (publisher units are rads already)
+odom_kr_: 1.0   # right wheel factor (publisher units are rads already)
+odom_b_: 0.288875       # wheel space (m)
+odom_K_: 0.008        # Noise factor.
+
+#### Extrinsic Trc TODO(jwd) - measure after mounting bracket
+Trc_: !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [ 0.0, -0.034899497, 0.999390827, 0.124, -1.0, 0.0, 0.0, -0.1, 0.0, -0.999390827, -0.034899497, 0.0 ]
+
+#--------------------------------------------------------------------------------------------
+# RGB-D Encoder Tracking
+#--------------------------------------------------------------------------------------------
+#### ORB feature 
+ret_ft_n_features_: 1600   # Number of ORB features per frame.
+
+#### Tracking
+ret_tk_dist_th_: 4.0    # Local map search radius. (m)
+ret_tk_angle_th_: 1.0   # Local map search angle. (rad)
+ret_tk_db_: 0.20         # Base threshold for erroneous match discard. (m)
+ret_tk_kd_: 0.025        # Scale factor of the threshold for erroneous match discard.
+
+#### Keyframe decision
+# Condation 1.
+ret_kd_fps_factor_: 0.9
+# Condation 2: 
+ret_kd_dist_th_: 0.3    # Max distance (m)
+ret_kd_angle_th_: 0.5   # Max angle (rad)
+
+#--------------------------------------------------------------------------------------------
+# Dynamic Pixels Culling
+#--------------------------------------------------------------------------------------------
+dpc_n_near_kfs_: 5                # Number of near keyframes.
+dpc_npts_per_cluster_: 6000       # Number of points per cluster.
+dpc_n_sel_pts_per_cluster_: 100   # Number of points per cluster to be selected for dynamic cluster decision.
+dpc_search_square_size_: 9        # 9 pixels
+
+#--------------------------------------------------------------------------------------------
+# Sparse Mapping 
+#--------------------------------------------------------------------------------------------
+#### Local Mapping
+sm_lm_window_size_: 8  # local BA window size sp_lm_window_size_ KFs.
+
+
+#--------------------------------------------------------------------------------------------
+# OctoMap Construction
+#--------------------------------------------------------------------------------------------
+oc_voxel_size_: 0.1   # Voxel size of the OctoMap (m).
+oc_submap_size_: 5    # Sub-OctoMap size (KFs)
+
+
