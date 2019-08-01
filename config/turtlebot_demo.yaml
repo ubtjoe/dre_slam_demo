@@ -4,7 +4,7 @@
 # Camera params. Pinhole
 #--------------------------------------------------------------------------------------------
 cam_rgb_topic_: /camera/color/image_raw
-cam_depth_topic_: /camera/depth/image_rect_raw
+cam_depth_topic_: /camera/aligned_depth_to_color/image_raw
 
 cam_fx_: 307.74047851562500  # K[0, 0]
 cam_fy_: 307.53375244140625  # K[1, 1]
@@ -29,20 +29,26 @@ cam_fps_: 15     # Camera FPs.
 #--------------------------------------------------------------------------------------------
 # Robot intrinsic and extrinsic
 #--------------------------------------------------------------------------------------------
-#### Intrinsic TODO(jwd) - figure out why joint_states is not incrementing when rolling the turtlebot (not remote-controlled)
-encoder_topic_: /joint_states
+encoder_topic_: /encoder
+# NOTE(jwd) - TICK2RAD=0.001533981 from turtlebot3_server.py (see https://github.com/ROBOTIS-GIT/turtlebot3/blob/master/turtlebot3_example/nodes/turtlebot3_server)
+# NOTE(jwd) - wheel radius, r = 33mm
+# s = r * theta -> scale_factor from ticks to m is (encoder_reading * TICK2RAD) * r == 5.0621373e-5 * encoder_reading 
+odom_kl_: 5.0621373e-5   # left wheel factor
+odom_kr_: 5.0621373e-5   # right wheel factor
+odom_b_: 0.288875        # wheel space (m)
+odom_K_: 0.008           # Noise factor. TODO(jwd) - this may need tweaking
 
-odom_kl_: 1.0   # left wheel factor (publisher units are rads already)
-odom_kr_: 1.0   # right wheel factor (publisher units are rads already)
-odom_b_: 0.288875       # wheel space (m)
-odom_K_: 0.008        # Noise factor.
-
-#### Extrinsic Trc TODO(jwd) - measure after mounting bracket
+#### Extrinsic Trc
+# NOTE(jwd) - rgb coordinate origin is translated (80mm, -11.5mm, 82mm) - this offset is in the robot-centered frame (with origin at turtlebot top-plate center) - see pg. 5 of paper for coordinate-system conventions
+# robot x -> camera z
+# robot y -> camera -x
+# robot z -> camera -y
+# NOTE(jwd) - realsense coordinate convention comes from Section 4.9.1 of "Intel RealSense D400 Series Product Family" document, available at https://www.intelrealsense.com/wp-content/uploads/2019/07/Intel-RealSense-D400-Series-Datasheet-Jun-2019.pdf?_ga=2.221252561.854238117.1564685943-713071822.1561416637
 Trc_: !!opencv-matrix
    rows: 3
    cols: 4
    dt: d
-   data: [ 0.0, -0.034899497, 0.999390827, 0.124, -1.0, 0.0, 0.0, -0.1, 0.0, -0.999390827, -0.034899497, 0.0 ]
+   data: [ 0.0, 0.0, 1.0, 0.080, -1.0, 0.0, 0.0, -0.0115, 0.0, -1.0, 0.0, 0.082 ]
 
 #--------------------------------------------------------------------------------------------
 # RGB-D Encoder Tracking
